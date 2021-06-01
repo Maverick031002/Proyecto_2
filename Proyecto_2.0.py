@@ -105,7 +105,7 @@ def menu_administrativo(pantalla):
     menu.add_cascade(label="1 - Opciones administrativas", font=("Times new roman","12"), menu = opAdmi)
     frame.pack()
     
-#Verificación de acceso
+#Solicitar clave de acceso
 
 def solicitar_clave(pantalla):
     frame = tk.Frame(pantalla,height=300, width=600)
@@ -118,14 +118,15 @@ def solicitar_clave(pantalla):
     boton = tk.Button(frame,text = "Ingresar",font=("Times new roman","12"),
                       command = lambda: verificar_clave(entrada_var.get(),pantalla,frame))
     boton.place(x=260,y=120)
-    
+
+    #Si la clave esta entrar al menu
 def verificar_clave(clave,pantalla,frame):
     verificar = leer_archivo_claves()
     if (clave in verificar):
         transicion(frame,menu_administrativo,pantalla)
     else:
         messagebox.askyesno("Error","La contraseña es incorrecta o no esta registrada. ¿Desea continuar o intentar otra vez?")
-        
+    #Buscar clave en el archivo    
 def leer_archivo_claves():
     archivo_claves = open("claves.txt")
     lineas = archivo_claves.readlines()
@@ -137,7 +138,7 @@ def leer_archivo_claves():
     return lineas_modificadas
 
 #############################################################################################################################################
-#Gestion de Empresas
+#Gestion de Empresas menu
 
 def gestion_empresa(pantalla):
     frame = tk.Frame(pantalla)
@@ -168,7 +169,7 @@ def gestion_empresa(pantalla):
     
     frame.pack()
 
-
+#Interfaz de agregar empresas
 def incluir_empresa():
     window = tk.Tk()
     window.geometry("600x300")
@@ -179,7 +180,7 @@ def incluir_empresa():
     direccion = tk.StringVar()
     señas = tk.StringVar()
     
-    etiqueta1 = tk.Label(window,text="Cédula Juridica: ",font=("Times new roman","12"), fg="black").place(x=5,y=40)
+    etiqueta1 = tk.Label(window,text="Cédula Empresa: ",font=("Times new roman","12"), fg="black").place(x=5,y=40)
     Cedula = tk.Entry(window,textvariable = cedula, font=("Times new roman","12"), fg="Black")
     Cedula.place(x=159,y=40)
     
@@ -205,7 +206,7 @@ def incluir_empresa():
     
     window.mainloop()
     
-
+#Agrega la empresa
 def registrar_empresa(cedula,nombre,provincia,direccion,señas):
     almacenar_empresas = open("Empresas.txt","a")
     if len (cedula)==10:
@@ -213,11 +214,11 @@ def registrar_empresa(cedula,nombre,provincia,direccion,señas):
         archivo2 = archivo.readlines()
         abrirTrans= open("Transportes.txt")
         abrir=abrirTrans.readlines()
-        if (("Cedula Jurídica:"+cedula + "\n") in archivo2):
+        if (("Cedula Empresa:"+cedula + "\n") in archivo2):
             messagebox.showerror(title = "Error", message = "La empresa ya existe")
                 
         else:
-            almacenar_empresas.write("Cedula Jurídica:"+ cedula +"\n")
+            almacenar_empresas.write("Cedula Empresa:"+ cedula +"\n")
             almacenar_empresas.write("Nombre:"+ nombre +"\n")
             almacenar_empresas.write("Provincia:"+ provincia +"\n")
             almacenar_empresas.write("Dirección:"+ direccion +"\n")
@@ -228,6 +229,7 @@ def registrar_empresa(cedula,nombre,provincia,direccion,señas):
     else:
         messagebox.showerror(title = "Error", message = "La cedula debe tener 10 digitos")
 
+#Interfaz de eliminar empresas
 def eliminar_empresa():
     window = tk.Tk()
     window.geometry("600x300")
@@ -237,7 +239,7 @@ def eliminar_empresa():
     Cedula = tk.Entry(window,text = "", font=("Times new roman","12"), bg="white", fg="Black")
     Cedula.pack()
 
-
+#Pasa los datos a la siguiente funcion
     def eliminar_emp2():
         variable = Cedula.get()
         return eliminar_emp(variable)
@@ -247,18 +249,18 @@ def eliminar_empresa():
     
     window.mainloop()
 
-
+#Verifica si la cedula de la empresa que va a eliminar esta en el archivo
 def eliminar_emp(cedula_juridica):
     open_file = open("Empresas.txt")
     empresas = open_file.readlines()
     open_file2 = open("Transportes.txt")
     transportes = open_file2.readlines()
-    if (("Cedula Jurídica:"+cedula_juridica+"\n")in empresas):
-        if (("Cedula Jurídica:"+cedula_juridica+ "\n") in transportes):
+    if (("Cedula Empresa:"+cedula_juridica+"\n")in empresas):
+        if (("Cedula Empresa:"+cedula_juridica+ "\n") in transportes):
             messagebox.showerror(title = "Error", message = "La empresa esta asociada un transporte")
         else:
             cedula_juridica=str(cedula_juridica)
-            potencia = empresas.index("Cedula Jurídica:"+cedula_juridica+"\n")
+            potencia = empresas.index("Cedula Empresa:"+cedula_juridica+"\n")
             cedula_juridica = deleteEmpresa(empresas, potencia, 0)
             open_file.close()
             open_file = open("Empresas.txt", "w")
@@ -269,7 +271,7 @@ def eliminar_emp(cedula_juridica):
     else:
         messagebox.showerror(title = "Error", message = "No existe una empresa con la cedula juridica escrita")
         
-    
+    #elimina las lineas 
 def deleteEmpresa(delete,ContarLineas,contador):
     if contador == 6:
         return TransformarSTR(delete)
@@ -278,6 +280,7 @@ def deleteEmpresa(delete,ContarLineas,contador):
         return deleteEmpresa(delete,ContarLineas,contador+1)
 
 ############################################################################################################################################
+#Muestra una listbox con las empresas añadidas
 def mostrar_empresas():
     ventana = tk.Tk()
     ventana.geometry("600x300")
@@ -295,23 +298,25 @@ def mostrar_empresas():
 
     
 #############################################################################################################################################
+#Interfaz de modificar la empresa
+
 def modificar_empresa():
      ventana=tk.Tk()
      ventana.title("Modificar Empresa")
      ventana.geometry("600x300")
     
-     Cedula=tk.Label(ventana,text="Cédula Juridica:",font=("Times New Roman",12), fg="Black")
+     Cedula=tk.Label(ventana,text="Cédula Empresa:",font=("Times New Roman",12), fg="Black")
      Cedula.pack()
     
      cedula=tk.Entry(ventana,text="", font=("Times New Roman", 12), fg="Black")
      cedula.pack()
     
      boton=tk.Button(ventana,text="Modificar Empresa",font=("Times New Roman",12),fg="Black",
-                          command = lambda:modificar_empresa_aux(cedula.get()))
+                          command = lambda: modificar_empresa_aux(cedula.get()))
      boton.pack()
     
      boton2 = tk.Button(ventana,text="Salir",font=("Times New Roman",12),fg="Black",
-               command=lambda:gestion_empresa())
+               command = lambda: gestion_empresa())
      boton2.pack()
     
      ventana.mainloop()
@@ -319,59 +324,70 @@ def modificar_empresa():
 def modificar_empresa_aux(cedula):
      abrir_file_empresas = open("Empresas.txt")
      empresas = abrir_file_empresas.readlines()
-     print(("Cedula Jurídica:"+cedula+"\n"), empresas)
-     if("Cedula Jurídica:"+cedula+"\n")in empresas:
+     if("Cedula Empresa:"+cedula+"\n")in empresas:
           cedula=str(cedula)
-          indice = empresas.index("Cedula Jurídica:"+cedula+"\n")
-          cedula = deleteEmpresa(empresas, indice, 0)
+          indice = empresas.index("Cedula Empresa:"+cedula+"\n")
+          cedula = modificar(empresas, indice+1, 1)
           abrir_file_empresas.close()
-          abrir_file_empresas = open("Empresas.txt", "w")
-          abrir_file_empresas.write(cedula)
-          abrir_file_empresas.close()
-          return modificar_empresa_aux2()
+
      else:
           messagebox.showerror(title = "Error", message = "La cedula no se encuentra registrada")
         
 #Pidiendo los nuevos datos
-def modificar_empresa_aux2():
-     ventana = tk.Tk()
-     ventana.title("Modificar Empresa")
-     ventana.geometry("600x300")
-         
-     tk.Label(ventana, text="Nueva Empresa", font=("Times New Roman", 12), fg="Black").pack()
-     Cedula=tk.Label(ventana,text="Nueva Cedula Jurídica",font=("Times New Roman", 12), fg="Black")
-     Cedula.place(x=5,y=40)
-     cedula=tk.Entry(ventana,text="", font=("Times New Roman", 12), fg="Black")
-     cedula.place(x=200,y=40)
-         
-     Nombre=tk.Label(ventana,text="Nueva empresa:",font=("Times New Roman", 12),fg="Black")
-     Nombre.place(x=5,y=80) 
-     nombre=tk.Entry(ventana,text="",font=("Times New Roman", 12), bg="SkyBlue1",fg="Black")
-     nombre.place(x=200,y=80)
-         
-     Provincia=tk.Label(ventana,text="Nueva Provincia:",font=("Times New Roman", 12), fg="Black")
-     Provincia.place(x=5,y=120)
-     provincia=tk.Entry(ventana,text="",font=("Times New Roman", 12), bg="SkyBlue1",fg="Black")
-     provincia.place(x=200,y=120)
-
-     Direccion=tk.Label(ventana,text="Nueva dirección:",font=("Times New Roman", 12), fg="Black")
-     Direccion.place(x=5,y=120)
-     direccion=tk.Entry(ventana,text="",font=("Times New Roman", 12),fg="Black")
-     direccion.place(x=200,y=120)
-
-     Señas=tk.Label(ventana,text="Nuevas Señas exactas:",font=("Times New Roman", 12), fg="Black")
-     Señas.place(x=5,y=120)
-     señas=tk.Entry(ventana,text="",font=("Times New Roman", 12),fg="Black")
-     señas.place(x=200,y=120)
-
-     tk.Button(ventana,text="Aceptar",font=("Times New Roman", 12),fg="Black",
-               command= lambda: registrar_empresa(cedula.get(),nombre.get(),provincia.get(),direccion.get(),señas.get())).place(x=205,y=180)
+def modificar(datos,indice,cont):
+    ventana=Tk()
+    ventana.geometry("600x300")
     
-     ventana.mainloop()
+    etiqueta=tk.Label(ventana,text="Empresa:")
+    etiqueta.pack()
+    entry=tk.Entry(ventana)
+    entry.pack()
+    
+    etiqueta2=tk.Label(ventana,text="Provicia:")
+    etiqueta2.pack()
+    entry2=tk.Entry(ventana)
+    entry2.pack()
+    
+    etiqueta3=tk.Label(ventana,text="Ciudad:")
+    etiqueta3.pack()
+    entry3=tk.Entry(ventana)
+    entry3.pack()
+
+    etiqueta4=tk.Label(ventana,text="Direccion:")
+    etiqueta4.pack()
+    entry4=tk.Entry(ventana)
+    entry4.pack()
+
+    etiqueta5=tk.Label(ventana,text="Señas Exactas:")
+    etiqueta5.pack()
+    entry5=tk.Entry(ventana)
+    entry5.pack()
+    
+    def modificar_aux():
+        empresa = entry.get()
+        provincia = entry2.get()
+        ciudad = entry3.get()
+        direccion = entry4.get()
+        señas = entry5.get()
+        return modificar2_aux(empresa,provincia,ciudad,direccion,señas,datos,indice,cont)
+    boton=tk.Button(ventana,text="Modificar",command=modificar_aux)
+    boton.pack()
 
 
 
 
+def modificar2_aux(empresa,provincia,ciudad,direccion,señas,datos,indice,cont):
+    archivo = open("Empresas.txt","w")
+    datos[indice]=("Nombre:"+empresa+"\n")
+    datos[indice+1]=("Provincia:"+provincia+"\n")
+    datos[indice+2]=("Ciudad:"+ciudad+"\n")
+    datos[indice+3]=("Direccion:"+direccion+"\n")
+    datos[indice+4]=("Señas Exactas:"+señas+"\n")
+    datos[indice+5]=("************************************************"+"\n")
+
+    
+    archivo.write( TransformarSTR(datos))
+    
 
 
 #############################################################################################################################################
@@ -391,7 +407,7 @@ def gestion_transporte(pantalla):
                     command = eliminar_transporte)
     
     op1.add_command(label = "3 - Modificar Transporte",font = ("Times new roman","12"),
-                    command = lambda: transicion(frame,modificar_transporte,pantalla))
+                    command = modificar_transporte)
     
     op1.add_command(label = "4 - Mostrar Transporte",font = ("Times new roman","12"),
                     command = mostrar_transportes)
@@ -477,7 +493,7 @@ def registrar_transporte(placa,tipo,marca, modelo, año, empresa, asientos_norma
         almacenar_transporte.write("Marca:"+marca +"\n")
         almacenar_transporte.write("Modelo:"+modelo +"\n")
         almacenar_transporte.write("Año:"+año +"\n")
-        almacenar_transporte.write("Empresa:"+empresa +"\n")
+        almacenar_transporte.write("Cedula Empresa:"+empresa +"\n")
         almacenar_transporte.write("Asientos Normales:"+asientos_normal +"\n")
         almacenar_transporte.write("Asientos Economicos:"+asientos_economicos+"\n")
         almacenar_transporte.write("Asientos VIP:"+asientos_vip +"\n")
@@ -543,10 +559,124 @@ def mostrar_transportes():
     for datos in abrir2:
         mostrar_datos.insert(contador,datos)
         contador += 1
-
-
-    
 #################################################################################################################################
+
+def modificar_transporte():
+    ventana=tk.Tk()
+    ventana.title("Modificar Transporte")
+    ventana.geometry("600x600")
+    
+    Placa=tk.Label(ventana,text="Placa:",font=("Times New Roman",12), fg="Black")
+    Placa.pack()
+    
+    placa=tk.Entry(ventana,text="", font=("Times New Roman", 12), fg="Black")
+    placa.pack()
+    
+    boton=tk.Button(ventana,text="Modificar Transporte",font=("Times New Roman",12),fg="Black",
+                          command = lambda: modificar_transporte_aux(placa.get()))
+    boton.pack()
+    
+    boton2 = tk.Button(ventana,text="Salir",font=("Times New Roman",12),fg="Black",
+               command = lambda: gestion_transporte())
+    boton2.pack()
+    
+    ventana.mainloop()
+
+def modificar_transporte_aux(placa):
+     abrir_file_transportes = open("Transportes.txt")
+     transportes = abrir_file_transportes.readlines()
+     if("Placa:"+placa+"\n")in transportes:
+          placa=str(placa)
+          indice = transportes.index("Placa:"+placa+"\n")
+          placa = modificar_trans(transportes, indice+1, 1)
+          abrir_file_transportes.close()
+
+     else:
+          messagebox.showerror(title = "Error", message = "La placa no se encuentra registrada")
+        
+#Pidiendo los nuevos datos
+def modificar_trans(datos,indice,cont):
+    ventana=Tk()
+    ventana.geometry("600x300")
+    
+    etiqueta=tk.Label(ventana,text="Tipo:")
+    etiqueta.pack()
+    entry=tk.Entry(ventana)
+    entry.pack()
+    
+    etiqueta2=tk.Label(ventana,text="Marca:")
+    etiqueta2.pack()
+    entry2=tk.Entry(ventana)
+    entry2.pack()
+    
+    etiqueta3=tk.Label(ventana,text="Modelo:")
+    etiqueta3.pack()
+    entry3=tk.Entry(ventana)
+    entry3.pack()
+
+    etiqueta4=tk.Label(ventana,text="Año:")
+    etiqueta4.pack()
+    entry4=tk.Entry(ventana)
+    entry4.pack()
+
+    etiqueta5=tk.Label(ventana,text="Cedula Empresa:")
+    etiqueta5.pack()
+    entry5=tk.Entry(ventana)
+    entry5.pack()
+
+    etiqueta6=tk.Label(ventana,text="Asientos Normales:")
+    etiqueta6.pack()
+    entry6=tk.Entry(ventana)
+    entry6.pack()
+
+    etiqueta7=tk.Label(ventana,text="Asientos Economicos:")
+    etiqueta7.pack()
+    entry7=tk.Entry(ventana)
+    entry7.pack()
+
+    etiqueta8=tk.Label(ventana,text="Asientos VIP:")
+    etiqueta8.pack()
+    entry8=tk.Entry(ventana)
+    entry8.pack()
+    
+    def modificar_aux2():
+        tipo = entry.get()
+        marca = entry2.get()
+        modelo = entry3.get()
+        año = entry4.get()
+        empresa = entry5.get()
+        asientos_normales = entry6.get()
+        asientos_economicos = entry7.get()
+        asientos_vip = entry8.get()
+        return modificar_trans2_aux(tipo,marca,modelo,año,empresa,asientos_normales,asientos_economicos,asientos_vip,datos,indice,cont)
+    
+    boton=tk.Button(ventana,text="Aceptar",command = modificar_aux2)
+    boton.pack()
+
+
+
+def modificar_trans2_aux(tipo,marca,modelo,año,empresa,asientos_normales,asientos_economicos,asientos_vip,datos,indice,cont):
+    archivo = open("Transportes.txt","w")
+    datos[indice]=("Tipo de transporte:"+tipo+"\n")
+    datos[indice+1]=("Provincia:"+marca+"\n")
+    datos[indice+2]=("Ciudad:"+modelo+"\n")
+    datos[indice+3]=("Direccion:"+año+"\n")
+    datos[indice+4]=("Cedula Empresa:"+empresa+"\n")
+    datos[indice+5]=("Asientos Normales:"+asientos_normales+"\n")
+    datos[indice+6]=("Asientos Economicos:"+asientos_economicos+"\n")
+    datos[indice+7]=("Asientos VIP:"+asientos_vip+"\n")
+    
+    archivo.write( TransformarSTR(datos))
+    
+   
+#################################################################################################################################
+def numeroAutomatico(archivo,contador):
+    if archivo == []:
+        return contador//9+1
+    else:
+        return numeroAutomatico(archivo[1:],contador+1)
+
+
 def gestion_viaje(pantalla):
     frame = tk.Frame(pantalla)
     frame.pack()
@@ -558,19 +688,19 @@ def gestion_viaje(pantalla):
     op1.add_command(label = "1 - Incluir Viaje",font = ("Times new roman","12"),
                     command = incluir_viaje)
     
-    op1.add_command(label = "2 - Eliminar Transporte",font = ("Times new roman","12"),
+    op1.add_command(label = "2 - Eliminar Viaje",font = ("Times new roman","12"),
                     command = eliminar_viaje)
     
-    op1.add_command(label = "3 - Modificar Transporte",font = ("Times new roman","12"),
-                    command = lambda: transicion(frame,modificar_transporte,pantalla))
+    op1.add_command(label = "3 - Modificar Viaje",font = ("Times new roman","12"),
+                    command = modificar_viajes)
     
-    op1.add_command(label = "4 - Mostrar Transporte",font = ("Times new roman","12"),
+    op1.add_command(label = "4 - Mostrar Viaje",font = ("Times new roman","12"),
                     command =  mostrar_viajes)
     
     op1.add_command(label = "5 - Retornar",font = ("Times new roman","12"),
                     command = lambda: transicion(frame,menu_administrativo,pantalla))
     
-    menu1.add_cascade(label =" Gestión de Transporte",font = ("Times new roman","12"), menu = op1)
+    menu1.add_cascade(label =" Gestión de Viajes",font = ("Times new roman","12"), menu = op1)
     pantalla.config(menu=menu1)
     pantalla.mainloop()
 
@@ -623,32 +753,63 @@ def incluir_viaje():
     
     etiqueta11 =tk.Label(window,text="Precio de VIP: ",font=("Times new roman","12"),bg="gray",fg="black").place(x=5,y=480)
     PrecioV = tk.Entry(window,textvariable = precio_vip,font=("Times new roman","12"),fg="Black").place(x=159,y=480)
+
+
+    etiqueta12 =tk.Label(window,text="Cedula de la Empresa: ",font=("Times new roman","12"),bg="gray",fg="black").place(x=5,y=480)
+    Empresa = tk.Entry(window,textvariable = empresa,font=("Times new roman","12"),fg="Black").place(x=159,y=480)
+
+    etiqueta13 =tk.Label(window,text="Placa del Transporte: ",font=("Times new roman","12"),bg="gray",fg="black").place(x=5,y=480)
+    Transporte = tk.Entry(window,textvariable = transporte,font=("Times new roman","12"),fg="Black").place(x=159,y=480)
     
     tk.Button(window,text="Agregar",font = ("Times new roman","12"),bg="#e7c4e5",fg="Black",
               command = lambda: registrar_transporte(placa.get(),transporte.get(),marca.get(), modelo.get(), año.get(), empresa.get(),
-                                                     asientos_normal.get(),asientos_economicos.get(),asientos_vip.get())).place(x=179,y=520)
+                                                     asientos_normal.get(),asientos_economicos.get(),asientos_vip.get(),empresa.get(),
+                                                     transporte.get())).place(x=179,y=520)
 
     
     window.mainloop()
 
 def registrar_viaje(provincia_salida,ciudad_salida,fecha_salida,hora_salida,provincia_llegada,ciudad_llegada,fecha_llegada,hora_llegada,precio_normal,
                          precio_economico,precio_vip):
-     almacenar_viaje = open("Viajes.txt","a")
-     almacenar_viaje.write(provincia_salida +"\n")
-     almacenar_viaje.write(ciudad_salida+"\n")
-     almacenar_viaje.write(fecha_salida +"\n")
-     almacenar_viaje.write(hora_salida +"\n")
-     almacenar_viaje.write(provincia_llegada +"\n")
-     almacenar_viaje.write(ciudad_llegada +"\n")
-     almacenar_viaje.write(fecha_llegada +"\n")
-     almacenar_viaje.write(hora_llegada+"\n")
-     almacenar_viaje.write(precio_normal +"\n")
-     almacenar_viaje.write(precio_economico +"\n")
-     almacenar_viaje.write(precio_vip +"\n")
-     almacenar_viaje.write("************************************************"+"\n")
-     almacenar_viaje.close()
-     messagebox.showinfo(title = "Viaje añadido",message = "¡El viaje se ha registrado exitosamente!")
+    almacenar_viaje = open("Viajes.txt","a")
+    Archivo = "Información por viaje.txt"
+    Archivo2 = open(Archivo,"a")
+    Archivo3 = open(Archivo)
+    Archivo3 = Archivo3.readlines()
+    NumeroViaje = numeroAutomatico(Archivo3,1)
+    
+    abrir = open(file)
+        
+    almacenar_viaje.write((generarNum())+"\n")
+     
+    almacenar_viaje.write("Provincia de Salida"+provincia_salida +"\n")
+    almacenar_viaje.write("Ciudad de Salida"+ciudad_salida+"\n")
+    almacenar_viaje.write("Fecha de Salida"+fecha_salida +"\n")
+    almacenar_viaje.write("Hora de Salida"+hora_salida +"\n")
+    almacenar_viaje.write("Provincia de llegada"+provincia_llegada +"\n")
+    almacenar_viaje.write("Ciudad de Llegada"+ciudad_llegada +"\n")
+    almacenar_viaje.write("Fecha de Llegada"+fecha_llegada +"\n")
+    almacenar_viaje.write("Hora de Llegada"+hora_llegada+"\n")
+    almacenar_viaje.write("Precio Normal"+precio_normal +"\n")
+    almacenar_viaje.write("Precio Económico"+precio_economico +"\n")
+    almacenar_viaje.write("Preciio VIP"+precio_vip +"\n")
+    almacenar_viaje.write("Cedula Empresa:"+empresa+"\n")
+    almacenar_viaje.write("Placa Transporte:"+transporte+"\n")
+     
+    almacenar_viaje.write("************************************************"+"\n")
+     
+    almacenar_viaje.close()
+    messagebox.showinfo(title = "Viaje añadido",message = "¡El viaje se ha registrado exitosamente!")
 
+def generarNum():
+    archivo="Viajes.txt"
+    anexar_archivo=open (archivo,'a')
+    lista_viajes= open (archivo,'r')
+    cont=0
+    for linea in agenda:
+        cont += 1
+    lista_viajes.close()
+    return str(cont//12+1)
 
 
 def eliminar_viaje():
@@ -685,7 +846,7 @@ def eliminar_viaj(placa):
         
     
 def deleteTransporte(delete,ContarLineas,contador):
-    if contador == 10:
+    if contador == 14:
         return TransformarSTR(delete)
     else:
         delete.pop(ContarLineas)
@@ -711,29 +872,158 @@ def mostrar_viajes():
 
 
 
+##############################################################################################################################################
+
+def modificar_viajes():
+    ventana=tk.Tk()
+    ventana.title("Modificar Transporte")
+    ventana.geometry("600x600")
+    
+    Numero=tk.Label(ventana,text="Numero:",font=("Times New Roman",12), fg="Black")
+    Numero.pack()
+    
+    numero=tk.Entry(ventana,text="", font=("Times New Roman", 12), fg="Black")
+    numero.pack()
+    
+    boton=tk.Button(ventana,text="Modificar Viaje",font=("Times New Roman",12),fg="Black",
+                          command = lambda: modificar_viaje_aux(placa.get()))
+    boton.pack()
+    
+    boton2 = tk.Button(ventana,text="Salir",font=("Times New Roman",12),fg="Black",
+               command = lambda: gestion_viaje())
+    boton2.pack()
+    
+    ventana.mainloop()
+
+def modificar_viaje_aux(placa):
+     abrir_file_viajes = open("Viajes.txt")
+     viajes = abrir_file_transportes.readlines()
+     if("Numero:"+numero+"\n")in viajes:
+          numero=str(numero)
+          indice = viajes.index("Numero:"+numero+"\n")
+          numero = modificar_viaj(viajes, indice+1, 1)
+          abrir_file_viajes.close()
+
+     else:
+          messagebox.showerror(title = "Error", message = "El numero del viaje no se encuentra registrado")
+        
+#Pidiendo los nuevos datos
+def modificar_viaj(datos,indice,cont):
+    ventana=Tk()
+    ventana.geometry("600x300")
+    
+    etiqueta=tk.Label(ventana,text="Provincia de Salida:")
+    etiqueta.pack()
+    entry=tk.Entry(ventana)
+    entry.pack()
+    
+    etiqueta2=tk.Label(ventana,text="Ciudad de Salida:")
+    etiqueta2.pack()
+    entry2=tk.Entry(ventana)
+    entry2.pack()
+    
+    etiqueta3=tk.Label(ventana,text="Fecha de Salida:")
+    etiqueta3.pack()
+    entry3=tk.Entry(ventana)
+    entry3.pack()
+
+    etiqueta4=tk.Label(ventana,text="Hora de Salida:")
+    etiqueta4.pack()
+    entry4=tk.Entry(ventana)
+    entry4.pack()
+
+    etiqueta5=tk.Label(ventana,text="Provincia de Llegada:")
+    etiqueta5.pack()
+    entry5=tk.Entry(ventana)
+    entry5.pack()
+
+    etiqueta6=tk.Label(ventana,text="Ciudad de Llegada:")
+    etiqueta6.pack()
+    entry6=tk.Entry(ventana)
+    entry6.pack()
+
+    etiqueta7=tk.Label(ventana,text="Fecha de Llegada:")
+    etiqueta7.pack()
+    entry7=tk.Entry(ventana)
+    entry7.pack()
+
+    etiqueta8=tk.Label(ventana,text="Hora de Llegada:")
+    etiqueta8.pack()
+    entry8=tk.Entry(ventana)
+    entry8.pack()
+
+    etiqueta9=tk.Label(ventana,text="Precio Normal:")
+    etiqueta9.pack()
+    entry9=tk.Entry(ventana)
+    entry9.pack()
+
+    etiqueta10=tk.Label(ventana,text="Precio Economico:")
+    etiqueta10.pack()
+    entry10=tk.Entry(ventana)
+    entry10.pack()
+
+    etiqueta11=tk.Label(ventana,text="Precio VIP:")
+    etiqueta11.pack()
+    entry11=tk.Entry(ventana)
+    entry11.pack()
+
+    etiqueta12=tk.Label(ventana,text="Cedula Empresa:")
+    etiqueta12.pack()
+    entry12=tk.Entry(ventana)
+    entry12.pack()
+
+    etiqueta13=tk.Label(ventana,text="Placa del Transporte:")
+    etiqueta13.pack()
+    entry13=tk.Entry(ventana)
+    entry13.pack()
+
+
+    
+    def modificar_aux3():
+        provincia_salida = entry.get()
+        ciudad_salida = entry2.get()
+        fecha_salida = entry3.get()
+        hora_salida = entry4.get()
+        provincia_llegada = entry5.get()
+        ciudad_llegada = entry6.get()
+        fecha_llegada = entry7.get()
+        hora_llegada = entry8.get()
+        precio_normal = entry9.get()
+        precio_economico = entry10.get()
+        precio_vip = entry11.get()
+        empresa=entry12.get()
+        transporte=entry13.get()
+        
+
+        
+        return modificar_viaj2_aux(provincia_salida,ciudad_salida,fecha_salida,hora_salida,provincia_llegada,hora_llegada,precio_normal,
+                                    precio_economico,precio_vip,empresa,transporte,datos,indice,cont)
+    
+    boton=tk.Button(ventana,text="Aceptar",command = modificar_aux3)
+    boton.pack()
 
 
 
+def modificar_viaj2_aux(provincia_salida,ciudad_salida,fecha_salida,hora_salida,provincia_llegada,hora_llegada,precio_normal,
+                                    precio_economico,precio_vip,empresa,transporte,datos,indice,cont):
+    archivo = open("Viajes.txt","w")
+    datos[indice]=("Provincia de Salida:"+provincia_salida+"\n")
+    datos[indice+1]=("Ciudad de Salida:"+ciudad_salida+"\n")
+    datos[indice+2]=("Fecha de Salida:"+fecha_salida+"\n")
+    datos[indice+3]=("Hora de Salida:"+hora_salida+"\n")
+    datos[indice+4]=("Provincia de Llegada:"+provincia_llegada+"\n")
+    datos[indice+5]=("Hora de Llegada:"+hora_llegada+"\n")
+    datos[indice+6]=("Precio Normal:"+precio_normal+"\n")
+    datos[indice+7]=("Precio Económico:"+precio_economico+"\n")
+    datos[indice+8]=("Precio VIP:"+precio_vip+"\n")
+    datos[indice+9]=("Cedula Empresa:"+empresa+"\n")
+    datos[indice+10]=("Placa Transporte:"+transporte+"\n")
+    datos[indice+11]=("****************************************************"+"\n")
+    
+    archivo.write( TransformarSTR(datos))
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-"""
-    etiqueta9 =tk.Label(window,text=" VIP: ",font=("Times new roman","12"),bg="gray",fg="black").place(x=5,y=400)
-    Asiento_vip = tk.Entry(window,textvariable = asientos_vip,font=("Times new roman","12"),fg="Black").place(x=159,y=400)
-"""    
    
 
 
